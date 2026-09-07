@@ -1,0 +1,84 @@
+[project]
+name = "tprealestate-agent"
+version = "0.1.0"
+description = "API de IA (agente) para Top Premium Real Estate"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.115.12",
+    "uvicorn[standard]>=0.34.0",
+    "pydantic==2.11.4",
+    "pydantic-settings==2.9.1",
+    "sqlalchemy>=2.0.36",
+    "alembic==1.15.2",
+    "psycopg2-binary==2.9.10",
+    "pgvector==0.4.1",
+    "python-multipart==0.0.20",
+    "sse-starlette==3.0.2",
+    "httpx==0.28.1",
+    "pyjwt>=2.10.1",
+    "openai==2.9.0",
+    "langchain==1.1.2",
+    "langchain-core==1.1.1",
+    "langchain-openai>=1.0.0",
+    "langgraph==1.0.4",
+    "langgraph-checkpoint==3.0.1",
+    "langgraph-checkpoint-postgres>=2.0.0",
+    "langgraph-prebuilt==1.0.5",
+    "langfuse==3.10.5",
+    "redis>=5.2.0",
+    "celery>=5.4.0",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.2.0",
+    "pytest==8.3.5",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.14.10",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = "--tb=short -ra"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py312"
+
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "alembic/versions",
+    "*.pyc",
+    ".vscode",
+    ".claude",
+    "_delete_me",
+]
+
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules/
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "T20", # flake8-print
+]
+
+# B008: FastAPI usa llamadas (Depends(), etc.) en los defaults de los argumentos.
+ignore = ["E501", "B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

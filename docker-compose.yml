@@ -1,0 +1,58 @@
+services:
+  tprealestate-agent-db:
+    container_name: tprealestate-agent-db
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tprealestate_agent
+    volumes:
+      - agent_postgres_data:/var/lib/postgresql/data
+    networks:
+      - tprealestate-agent-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tprealestate_agent"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  tprealestate-agent-redis:
+    container_name: tprealestate-agent-redis
+    image: redis:7-alpine
+    networks:
+      - tprealestate-agent-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  tprealestate-agent-api:
+    container_name: tprealestate-agent-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: tprealestate-agent-api
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8040:8040"
+    env_file:
+      - .env
+    command: uv run --no-sync uvicorn app.main:app --host 0.0.0.0 --port 8040 --reload
+    volumes:
+      - ./:/usr/src/app
+    networks:
+      - tprealestate-agent-network
+    depends_on:
+      tprealestate-agent-db:
+        condition: service_healthy
+      tprealestate-agent-redis:
+        condition: service_healthy
+
+volumes:
+  agent_postgres_data:
+
+networks:
+  tprealestate-agent-network:
+    driver: bridge

@@ -1,0 +1,55 @@
+schema: spec-driven
+
+# Contexto mostrado a la IA al crear artefactos (proposals, designs, specs).
+context: |
+  Proyecto: tprealestate-agent — API de IA (agente) de Top Premium Real Estate (TPRE).
+  Servicio independiente que da soporte al CRM inmobiliario (Django "tprealestate-api")
+  sin ser parte de el.
+
+  Stack:
+  - FastAPI (async) sobre Python 3.12, gestionado con uv.
+  - SQLAlchemy 2 + Alembic sobre PostgreSQL (pgvector) propio del agente.
+  - LangChain + LangGraph para los flujos conversacionales con estado.
+  - OpenAI (GPT-4o) como LLM principal, con capa abstraida (swappable a Gemini).
+  - Langfuse para observabilidad. Redis + Celery para tareas en segundo plano.
+
+  Dominio / requerimiento (PMV):
+  1. Chatbot Comercial: captacion de leads (comprador/vendedor/alquiler), cualificacion,
+     lead scoring A/B/C, agenda de visitas y registro en el CRM con derivacion a humano.
+  2. Analisis de imagenes de inmuebles (compliance de fotos al crear un inmueble).
+  3. Creacion de contenidos (anuncios y textos de RRSS desde la ficha del inmueble).
+  Fases posteriores: valoracion, soporte/formacion (RAG), analitica, radar de oportunidades.
+
+  Integracion con Django (CRM): el agente consulta y escribe via HTTP con un cliente tipado.
+  Autenticacion hibrida: reenvia el JWT del usuario cuando la accion la origina un usuario
+  identificado; usa una API key de servicio para el chatbot anonimo y las tareas de sistema.
+
+  Convenciones:
+  - Linter/formatter: ruff. Gestor de paquetes y entornos: uv. Tests: pytest.
+  - Identificadores y codigo en ingles; textos de cara al usuario en castellano.
+  - Estructura por capas bajo app/ (api, core, db, services, schemas, middlewares).
+
+  Acuerdo de trabajo (como se ejecuta y verifica el cambio):
+  - Quien testea: al cerrar la fase de preguntas de explore/propose/plan, y otra vez antes de
+    dar una implementacion por terminada, PREGUNTA al usuario si lo testea el manualmente o lo
+    testeas tu. Respeta la respuesta durante todo el cambio.
+  - Verificacion del servicio: este proyecto no tiene frontend, asi que no hay recorrido de
+    navegador. Cuando testea Claude, levanta el stack, ejercita el endpoint real en
+    http://localhost:8040/v1/ con su payload de verdad, comprueba que sale en /v1/docs y
+    ensena la peticion y la respuesta. Un endpoint que solo ha pasado el type-check no esta
+    verificado.
+  - TDD: se sigue Red-Green-Refactor; el test se escribe antes que la implementacion.
+
+# Reglas por artefacto (opcional)
+rules:
+  proposal:
+    - Enlaza siempre con el requerimiento del PMV y su fase.
+    - Incluye una seccion "Fuera de alcance".
+  tasks:
+    - Divide en tareas pequenas y verificables, con su test cuando aplique.
+    - "Sigue el bucle Red-Green-Refactor: una tarea de test precede a cada tarea de implementacion."
+    - Termina con una tarea de verificacion que nombre el endpoint concreto a ejercitar en
+      http://localhost:8040/v1/ con su payload, cubriendo el camino feliz mas los errores de
+      validacion y autorizacion.
+    - Registra quien testea — el usuario manualmente o Claude contra la API — segun lo
+      acordado en la fase de preguntas.

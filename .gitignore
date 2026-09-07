@@ -1,0 +1,15 @@
+.venv
+.env
+.ruff_cache
+.pytest_cache
+__pycache__/
+*.pyc
+
+logs/*
+!logs/.gitkeep
+
+# Briefs / planes locales (scratch personal)
+specs/*
+!specs/.gitkeep
+
+_delete_me/
