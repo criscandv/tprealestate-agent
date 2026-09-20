@@ -13,3 +13,6 @@ specs/*
 !specs/.gitkeep
 
 _delete_me/
+
+# Celery beat local schedule state (runtime, never versioned)
+celerybeat-schedule*
