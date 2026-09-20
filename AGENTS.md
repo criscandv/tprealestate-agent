@@ -18,6 +18,7 @@ en `docs/`.
 
 ## Directives
 
+- **Archiving OpenSpec changes:** `/opsx:archive` — or any request to archive, close or finalise a change — is executed by the `spec-archive-agent` subagent (Sonnet): launch it from the repo root with the change name and any decision the user already stated, wait for it, and relay its report; if it returns "decision needed", ask the user and relaunch it. Never run the archive steps inline. Enforced by the `UserPromptSubmit` hook `.claude/hooks/delegate-opsx-archive.sh`.
 - **Planificación spec-driven: OpenSpec.** Todo trabajo no trivial pasa por `/opsx:propose` → `/opsx:apply` → `/opsx:archive`. Las propuestas, diseños y tareas viven en `openspec/changes/<id>/`; las specs de larga vida en `openspec/specs/`. No implementar un cambio hasta que sus artefactos estén aprobados. **Nunca** usar `docs/specs/`.
 - **Gestor y linter: uv + ruff.** Nada de black/flake8/isort. Formatea y lintea con ruff.
 - **Tests: pytest.** Una funcionalidad no está terminada hasta que sus tests están en verde. Se sigue Red-Green-Refactor: el test se escribe antes que la implementación. Ver [`docs/WORKFLOW.md`](docs/WORKFLOW.md#4-tdd) y [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#testing).
